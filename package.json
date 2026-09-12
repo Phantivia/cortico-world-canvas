@@ -1,0 +1,43 @@
+{
+  "name": "cortico-world-canvas",
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Cortico World: a drawing studio and a draw-and-guess game — p5.brush strokes rendered in a headless browser, served as a live board",
+  "license": "MIT",
+  "keywords": [
+    "cortico-world",
+    "cortico",
+    "canvas",
+    "drawing"
+  ],
+  "engines": {
+    "node": ">=22"
+  },
+  "packageManager": "pnpm@11.5.0",
+  "main": "./src/index.ts",
+  "cortico": {
+    "kind": "world",
+    "api": 3
+  },
+  "files": [
+    "src",
+    "README.md"
+  ],
+  "scripts": {
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "canvas": "^3.2.3",
+    "express": "^4.22.2",
+    "p5.brush": "2.2.2",
+    "puppeteer-core": "^25.4.0"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.25",
+    "@types/node": "^22.10.0",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2",
+    "vitest": "^2.1.8"
+  }
+}

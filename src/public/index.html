@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Corti · 头像画室</title><link rel="icon" type="image/svg+xml" href="/corti-cursor.svg"><link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <header><div class="brand"><span class="brand-mark">C</span><b id="brand-title">Corti 的头像画室</b><span id="game-badge" class="game-badge" hidden>第 <b id="game-round">0</b> 局</span></div><div class="header-actions"><span id="connection" class="pill">正在连接</span><a id="view-link" href="/overlay" target="_blank">直播画面 ↗</a></div></header>
+  <main>
+    <aside class="references panel free-only">
+      <div class="section-title"><h2>参考图队列</h2><span id="reference-count">0 / 64</span></div>
+      <label class="upload operator" id="dropzone"><span class="upload-plus">＋</span><strong>添加参考图</strong><small>点击、拖入或 Ctrl+V 粘贴图片<br>PNG / JPG · 单张 ≤ 10 MiB<br>最长边 4096 px</small><input id="files" type="file" accept="image/png,image/jpeg" multiple></label>
+      <div id="pending" class="pending operator"></div>
+      <div id="references" class="reference-list"></div>
+    </aside>
+    <section class="workspace">
+      <div class="board-heading"><div><h1 id="board-title">画布</h1><span id="board-meta" class="muted">尚未新建画布</span></div><div class="buttons operator"><button id="new" class="secondary">＋ 新建画布</button><button id="save" disabled>保存 PNG</button></div></div>
+      <div class="toolbar operator">
+        <label>工具<select id="brush"><option value="pen">普通笔</option><option value="marker">马克笔</option><option value="soft">软笔</option><option value="eraser">橡皮擦</option><option value="line">直线</option><option value="rect">矩形</option><option value="ellipse">椭圆</option><option value="fill">填充</option><option value="spray">喷漆</option></select></label>
+        <label>颜色<input id="color" type="color" value="#6d72b8"></label>
+        <label>笔宽<input id="size" type="range" min="1" max="128" value="8"><output id="size-value">8</output></label>
+        <label>透明度<input id="opacity" type="range" min="1" max="100" value="100"></label>
+        <label class="checkbox"><input id="filled" type="checkbox">实心图形</label>
+      </div>
+      <div id="timer" class="timer" hidden>
+        <div class="timer-ring"><svg viewBox="0 0 120 120" aria-hidden="true"><circle class="track" cx="60" cy="60" r="52"></circle><circle id="timer-arc" class="arc" cx="60" cy="60" r="52"></circle></svg><div id="timer-clock" class="timer-clock">5:00</div></div>
+        <div class="timer-side"><div id="timer-label" class="timer-label">猜猜我在画什么？</div><div id="timer-blanks" class="blanks"></div><div id="timer-hint" class="hint-chip" hidden></div></div>
+      </div>
+      <div class="stage">
+        <div id="empty-board"><p>请新建画布</p></div>
+        <div id="board-wrap" hidden><canvas id="canvas" aria-label="主画布"></canvas><div id="corti-cursor" class="cursor" data-mode="idle" hidden><span class="cursor-tip"></span><img src="/corti-cursor.svg" alt="可缇绘画光标"><span class="cursor-name">可缇</span></div></div>
+        <div id="reveal" class="reveal" hidden>
+          <div id="confetti" class="confetti" aria-hidden="true"></div>
+          <div class="reveal-card"><div class="reveal-kicker">本局谜底</div><div id="reveal-answer" class="reveal-answer" role="status" aria-live="polite"></div><ol id="reveal-winners" class="reveal-winners"></ol></div>
+        </div>
+      </div>
+      <footer class="board-footer"><span id="progress">就绪</span><span id="coordinates">左上角为 (0, 0)</span></footer>
+      <div id="message" role="status" aria-live="polite"></div>
+    </section>
+    <aside class="history panel free-only"><div class="section-title"><h2>绘制步骤</h2><span id="step-count">0 步</span></div><ol id="steps"></ol><p id="step-empty" class="muted empty-small">暂无绘制步骤</p></aside>
+    <aside class="scoreboard panel game-only"><div class="section-title"><h2>计分板</h2><span id="score-count"></span></div><ol id="ranks"></ol><p id="rank-empty" class="muted empty-small">还没有人得分<br>快在弹幕里猜吧！</p></aside>
+  </main>
+  <dialog id="new-dialog"><form id="new-form"><h2>新建画布</h2><label>作品标题<input id="title" maxlength="120" required placeholder="例如：小月的头像"></label><div class="dimension-fields"><label>宽度<input id="width" type="number" min="64" max="2048" value="1024" required></label><label>高度<input id="height" type="number" min="64" max="2048" value="1024" required></label><label>底色<input id="background" type="color" value="#ffffff"></label></div><p class="muted">当前画布会自动存档，参考图队列保留。</p><div class="buttons"><button type="button" id="cancel-new" class="secondary">取消</button><button type="submit">新建</button></div></form></dialog>
+  <dialog id="reference-dialog"><button id="close-reference" class="secondary close">关闭</button><h2 id="reference-title"></h2><img id="reference-image" alt="参考图原图"></dialog>
+  <script src="/app.js" defer></script>
+</body>
+</html>

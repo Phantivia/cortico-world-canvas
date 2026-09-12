@@ -1,0 +1,27 @@
+{
+  // 本包只有 Node 侧代码:没有控制台面板插件,`public/` 下那几个浏览器脚本是纯 JS,
+  // 由无头浏览器加载,不进 TypeScript。所以 lib 里不放 DOM —— 放了 `fetch` 的响应体
+  // 会解析成 DOM 的 ReadableStream,而 Node 那份才是可异步迭代的。
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "allowImportingTsExtensions": true,
+    "lib": ["ES2022"],
+    "types": ["node"],
+    "strict": true,
+    "noUncheckedIndexedAccess": false,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+    "noEmit": true,
+    // 开发期把 `cortico/*` 指到同级的框架 checkout。装进宿主运行时不靠它:
+    // 那时解析由框架的 `src/plugins/runtime.ts` 注册的模块钩子完成。
+    "paths": {
+      "cortico/*": ["../BOT/src/*"]
+    }
+  },
+  "include": ["src/**/*.ts", "tests/**/*.ts", "scripts/**/*.ts"],
+  "exclude": ["node_modules", "dist"]
+}

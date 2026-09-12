@@ -1,0 +1,2 @@
+# 索引一律 LF。本包没有批处理脚本,不需要 CRLF 例外。
+* text=auto eol=lf
