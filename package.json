@@ -4,6 +4,10 @@
   "type": "module",
   "description": "Cortico World: a drawing studio and a draw-and-guess game — p5.brush strokes rendered in a headless browser, served as a live board",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Phantivia/cortico-world-canvas.git"
+  },
   "keywords": [
     "cortico-world",
     "cortico",
@@ -21,7 +25,8 @@
   },
   "files": [
     "src",
-    "README.md"
+    "README.md",
+    "LICENSE"
   ],
   "scripts": {
     "test": "vitest run",
