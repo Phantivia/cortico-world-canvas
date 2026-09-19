@@ -2,15 +2,60 @@
 
 Owner: `src/definition.ts`
 
-为 CortiV 提供直播头像画室：独立网页、参考图队列、绘画工具和带图片的工具回执。
+[Cortico](https://github.com/Pal-AI-Lab/Cortico) 的画室 World，以独立 npm 包发布：独立网页、参考图队列、
+绘画工具和带图片的工具回执，另有一个你画我猜模式。
 
-在 CortiV 控制台启用「头像画室」并按现有流程重启。也可在部署配置加入
+## 与 Cortico 的关系
+
+这是一个扩展包，不是 Cortico 的一部分。它按 Cortico 的扩展契约声明自己：
+
+```jsonc
+"cortico": { "kind": "world", "api": 4 }
+```
+
+运行时它以 `cortico/<框架 src 下的路径>` import 框架（`cortico/world.ts`、`cortico/core/types.ts` …），
+由框架 `src/extensions/runtime.ts` 注册的模块钩子解析到框架源码本身，扩展与框架共用同一份实例。
+因此包必须是 `"type": "module"`。本 World 没有控制台面板，不需要构建产物。
+
+## 安装
+
+```bash
+corepack pnpm install
+```
+
+然后二选一装进 Cortico：控制台「扩展」页手动安装，填本目录的绝对路径；或在 `<Cortico>/extensions/` 下
+`corepack pnpm add --ignore-workspace <本目录绝对路径>`。装完整进程重启 Cortico。
+
+在控制台启用「头像画室」并重启，或在部署配置加入
 `"worlds": { "canvas": { "enabled": true, "port": 7795 } }`。 World 默认关闭，
 只监听 `127.0.0.1`；端口占用时顺延，实际地址以控制台链接为准。
-绘制新路径需要本机安装 Google Chrome。画笔引擎使用无窗口的独立 Chrome，
+
+## 浏览器
+
+绘制新路径需要一个 Chromium 系浏览器。画笔引擎起一个无窗口的独立浏览器进程，
 从本地依赖加载 p5.brush 2.2.2 standalone，通过 WebGL2 渲染；无需外网或打开画室页面。
+本 World 不下载浏览器：`worlds.canvas.browserFile` 留空用本机安装的 Google Chrome（puppeteer 的
+`chrome` channel 定位），填了就用那个可执行文件。找不到浏览器时第一次绘制的工具回执报错，网页与
+参考图功能不受影响。
+
+## 开发
+
+`tsconfig.json` 的 `paths` 与 `vitest.config.ts` 的 `resolve.alias` 都把 `cortico/*` 指向
+`../BOT/src/`，也就是与本目录同级的框架 checkout。框架放在别处时改这两处，它们必须同步。
+
+```bash
+corepack pnpm typecheck
+corepack pnpm test
+```
+
+测试不起浏览器：绘制走 `canvas` 包的软件渲染，图层与网页由本地 HTTP 服务器验证。
+
+## 渲染
+
 透明图层适配器固定对应 p5.brush 2.2.2：图层内使用颜料混色，图层之间使用 alpha 合成。
 旧图层缓存保持原像素；重新编辑的部件使用当前适配器渲染。
+
+## 网页
 
 主页面 `/` 提供多图上传、上传前命名、重命名、参考图原图预览、主画布、手绘工具、
 新建、保存和步骤撤销。`/overlay` 供 OBS 浏览器源使用，显示画布、参考图和步骤，隐藏操作按钮。
@@ -98,8 +143,9 @@ Owner: `src/definition.ts`
 逐个播放选中部件的笔迹，保持同批修改后的遮挡和裁剪关系。
 密集编辑预先合成未变化的上层以减少动画开销；含旧连通填充时逐帧重放。
 这些预览优化不改变提交结果，最终画布仍按完整步骤顺序重放。
-24×24 像素头像与 `worlds/pvz/native/cursor_companion.h` 使用相同图案、调色板和四种动作节奏，
-图案保存在本 World 的静态 SVG 中，不建立 World 间运行时依赖。光标属于展示层，不进入作品 PNG。
+24×24 像素头像光标的图案、调色板和四种动作节奏来自
+[cortico-cursor-companion](https://github.com/Phantivia/cortico-cursor-companion)，
+以静态 SVG（`src/public/corti-cursor.svg`）随本 World 自带，不建立运行时依赖。光标属于展示层，不进入作品 PNG。
 
 `data/canvas/index.json` 保存当前画布 ID 与参考图队列；`boards/<id>.json` 保存画布和步骤；
 `references/` 保存解码归一化后的 PNG；`exports/` 保存每次另存的作品。新建不会覆盖旧档案，
@@ -110,3 +156,7 @@ Owner: `src/definition.ts`
 
 图片通过 Core 的 `media.put` 进入现有工具回执链路。供应商的 `multimodal` 声明
 决定请求是否附带图片；非多模态模型保留文字占位符，无额外视觉模型调用。
+
+## 许可
+
+MIT，见 [LICENSE](LICENSE)。框架 Cortico 也是 MIT，两者经扩展契约相连，许可各归各。
