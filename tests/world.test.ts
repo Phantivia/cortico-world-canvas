@@ -21,7 +21,7 @@ afterEach(async () => {
 it('runs the child renderer, emits uploaded reference events, and supplies blobs with text-only fallback', async () => {
   directory = mkdtempSync(join(tmpdir(), 'canvas-module-'));
   const host = new FakeHost();
-  module = new CanvasWorld({ cfg: { enabled: true, port: 0 }, directory: join(directory, 'canvas') });
+  module = new CanvasWorld({ cfg: { enabled: true, port: 0, browserFile: '' }, directory: join(directory, 'canvas') });
   await module.start(host);
   const call = (name: string, args = {}) => module!.tools().find((tool) => tool.name === name)!.handler(args, { role: 'main', log: host.log }) as Promise<ToolOutcome>;
   // 回执上的附件是待落库的字节;真 core 在落库刻换句柄,这里用日志附件库替它做同一件事
@@ -77,7 +77,7 @@ it('runs the child renderer, emits uploaded reference events, and supplies blobs
 it('cancels the child before committing an in-flight batch and recovers the last committed board', async () => {
   directory = mkdtempSync(join(tmpdir(), 'canvas-cancel-'));
   const host = new FakeHost();
-  module = new CanvasWorld({ cfg: { enabled: true, port: 0 }, directory });
+  module = new CanvasWorld({ cfg: { enabled: true, port: 0, browserFile: '' }, directory });
   await module.start(host);
   const tool = (name: string) => module!.tools().find((entry) => entry.name === name)!;
   await tool('canvas_new').handler({ title: '取消测试', width: 128, height: 128 }, { role: 'main', log: host.log });
@@ -96,7 +96,7 @@ it('cancels the child before committing an in-flight batch and recovers the last
 it('cancels p5 drawing, closes the renderer, and restarts with the committed media intact', async () => {
   directory = mkdtempSync(join(tmpdir(), 'canvas-p5-cancel-'));
   const host = new FakeHost();
-  module = new CanvasWorld({ cfg: { enabled: true, port: 0 }, directory: join(directory, 'canvas') });
+  module = new CanvasWorld({ cfg: { enabled: true, port: 0, browserFile: '' }, directory: join(directory, 'canvas') });
   const bytesOf = (out: ToolOutcome): Buffer => { const b = out.blobs![0]; if (!('bytes' in b)) throw new Error('expected bytes'); return Buffer.from(b.bytes); };
   const tool = (name: string) => module!.tools().find((entry) => entry.name === name)!;
   const call = (name: string, args = {}) => tool(name).handler(args, { role: 'main', log: host.log }) as Promise<ToolOutcome>;

@@ -80,7 +80,9 @@ export class CanvasWorld implements World {
       else pending.resolve(message.value);
     });
     try {
-      this.url = (await this.rpc('init', { directory: this.options.directory, port: this.options.cfg.port }) as { url: string }).url;
+      this.url = (await this.rpc('init', {
+        directory: this.options.directory, port: this.options.cfg.port, browserPath: this.options.cfg.browserFile.trim(),
+      }) as { url: string }).url;
       host.log.info(`画布网页已启动 ${this.url}`);
     } catch (error) { this.fail(error as Error); throw error; }
   }

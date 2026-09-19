@@ -93,7 +93,7 @@ describe('module', () => {
   it('serves the guide on entry, delivers the countdown as an internal flush event, and hides the answer from page state', async () => {
     const dir = directory();
     const host = new FakeHost();
-    const module = new CanvasWorld({ cfg: { enabled: true, port: 0 }, directory: join(dir, 'canvas') });
+    const module = new CanvasWorld({ cfg: { enabled: true, port: 0, browserFile: '' }, directory: join(dir, 'canvas') });
     await module.start(host);
     try {
       const call = (name: string, args = {}) => module.tools().find((tool) => tool.name === name)!.handler(args, { role: 'main', log: host.log }) as Promise<ToolOutcome>;

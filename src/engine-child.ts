@@ -6,6 +6,7 @@ process.on('message', (message: { id: number; name: string; args: Record<string,
     if (message.name === 'init') {
       server = new CanvasServer({
         directory: message.args.directory as string, port: message.args.port as number,
+        browserPath: message.args.browserPath as string,
         onReferences: (references) => process.send?.({ event: 'references', references }),
         onGameEvent: (text) => process.send?.({ event: 'game', text }),
       });
