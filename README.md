@@ -144,7 +144,7 @@ corepack pnpm test
 密集编辑预先合成未变化的上层以减少动画开销；含旧连通填充时逐帧重放。
 这些预览优化不改变提交结果，最终画布仍按完整步骤顺序重放。
 24×24 像素头像光标的图案、调色板和四种动作节奏来自
-[cortico-cursor-companion](https://github.com/Phantivia/cortico-cursor-companion)，
+[cortico-world-pvz 的 cursor-companion 目录](https://github.com/Phantivia/cortico-world-pvz/tree/main/cursor-companion)，
 以静态 SVG（`src/public/corti-cursor.svg`）随本 World 自带，不建立运行时依赖。光标属于展示层，不进入作品 PNG。
 
 `data/canvas/index.json` 保存当前画布 ID 与参考图队列；`boards/<id>.json` 保存画布和步骤；
