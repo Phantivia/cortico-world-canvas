@@ -3,6 +3,7 @@
   "version": "0.1.1",
   "type": "module",
   "description": "Cortico World: a drawing studio and a draw-and-guess game — p5.brush strokes rendered in a headless browser, served as a live board",
+  "author": "Phantivia",
   "license": "MIT",
   "repository": {
     "type": "git",
