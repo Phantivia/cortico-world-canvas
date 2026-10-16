@@ -103,7 +103,7 @@ describe('module', () => {
       expect(JSON.parse(enter.text.slice(enter.text.lastIndexOf('\n') + 1))).toMatchObject({ mode: 'guess', round: null });
       const round = await call('canvas_game_round', { answer: '小猫', seconds: 1, hint: '动物' });
       expect(JSON.parse(round.text).round).toMatchObject({ id: 1, answer: '小猫' });
-      const base = module.console().links![0].href;
+      const base = module.webUi().links![0].href;
       const state = await (await fetch(`${base}/api/state`)).json() as { game: { mode: string; round: unknown } };
       expect(state.game.mode).toBe('guess');
       expect(state.game.round).toMatchObject({ length: 2, hint: '动物' });

@@ -10,12 +10,12 @@ Owner: `src/definition.ts`
 这是一个扩展包，不是 Cortico 的一部分。它按 Cortico 的扩展契约声明自己：
 
 ```jsonc
-"cortico": { "kind": "world", "api": 4 }
+"cortico": { "kind": "world", "api": 6 }
 ```
 
 运行时它以 `cortico/<框架 src 下的路径>` import 框架（`cortico/world.ts`、`cortico/core/types.ts` …），
 由框架 `src/extensions/runtime.ts` 注册的模块钩子解析到框架源码本身，扩展与框架共用同一份实例。
-因此包必须是 `"type": "module"`。本 World 没有控制台面板，不需要构建产物。
+因此包必须是 `"type": "module"`。本 World 没有 WebUI 面板，不需要构建产物。
 
 ## 安装
 
@@ -23,12 +23,12 @@ Owner: `src/definition.ts`
 corepack pnpm install
 ```
 
-然后二选一装进 Cortico：控制台「扩展」页手动安装，填本目录的绝对路径；或在 `<Cortico>/extensions/` 下
+然后二选一装进 Cortico：WebUI「扩展」页手动安装，填本目录的绝对路径；或在 `<Cortico>/extensions/` 下
 `corepack pnpm add --ignore-workspace <本目录绝对路径>`。装完整进程重启 Cortico。
 
-在控制台启用「头像画室」并重启，或在部署配置加入
+在 WebUI 启用「头像画室」并重启，或在部署配置加入
 `"worlds": { "canvas": { "enabled": true, "port": 7795 } }`。 World 默认关闭，
-只监听 `127.0.0.1`；端口占用时顺延，实际地址以控制台链接为准。
+只监听 `127.0.0.1`；端口占用时顺延，实际地址以 WebUI 链接为准。
 
 ## 浏览器
 
@@ -123,7 +123,7 @@ corepack pnpm test
 右侧计分板显示前十名；开局时舞台上方弹出倒计时（进度环、字数空格、公开提示），揭示时弹出答案
 卡片与本局得分者。名次变化、进场、加分和弹窗都有过渡动画。游戏逻辑不在 World 内：谁答对、记几分
 由模型按 [GAME_GUIDE.md](GAME_GUIDE.md) 判断后写入计分板， World 只保存状态、隐藏题目和计时。
-主持说明在控制台「画布 · 你画我猜主持说明」可编辑，每次进入游戏时读取。
+主持说明在 WebUI「画布 · 你画我猜主持说明」可编辑，每次进入游戏时读取。
 
 倒计时到点由画布子进程发出内部事件 `canvas.game`（`trigger: flush`），正文带题目和下一步；
 之后的回答不计分，先记分再揭示。`data/canvas/game.json` 保存模式、局数、当前一局（含题目）、

@@ -30,7 +30,7 @@ it('runs the child renderer, emits uploaded reference events, and supplies blobs
   const intern = (out: ToolOutcome): BlobRef[] => out.blobs!.map((b) => { if (!('bytes' in b)) throw new Error('expected bytes'); return { handle: store.put(b.bytes, b.mime), mime: b.mime, fallbackText: b.fallbackText }; });
   await call('canvas_new', { title: '小月', width: 128, height: 128 });
   const reply = await call('canvas_draw', { actions: [{ kind: 'ellipse', points: [{ x: 10, y: 10 }, { x: 100, y: 100 }], color: '#8866ff', filled: true }] });
-  const base = module.console().links![0].href;
+  const base = module.webUi().links![0].href;
   const png = Buffer.from(await (await fetch(`${base}/api/canvas.png`)).arrayBuffer());
   expect(bytesOf(reply).equals(png)).toBe(true);
   const saved = await call('canvas_save');
@@ -84,7 +84,7 @@ it('cancels the child before committing an in-flight batch and recovers the last
   const abort = new AbortController();
   const painting = tool('canvas_draw').handler({ actions: [{ kind: 'line', points: [{ x: 1, y: 1 }, { x: 120, y: 120 }] }] }, { role: 'main', log: host.log, signal: abort.signal });
   const rejected = expect(painting).rejects.toThrow('取消');
-  const base = module.console().links![0].href;
+  const base = module.webUi().links![0].href;
   await expect.poll(async () => ((await (await fetch(`${base}/api/state`)).json()) as { painting: unknown }).painting !== null).toBe(true);
   abort.abort(); await rejected; await module.stop();
   expect(new CanvasStore(directory).current().steps).toHaveLength(0);
@@ -107,7 +107,7 @@ it('cancels p5 drawing, closes the renderer, and restarts with the committed med
   const abort = new AbortController();
   const painting = tool('canvas_draw').handler({ actions: Array.from({ length: 20 }, () => action) }, { role: 'main', log: host.log, signal: abort.signal });
   const rejected = expect(painting).rejects.toThrow('取消');
-  const base = module.console().links![0].href;
+  const base = module.webUi().links![0].href;
   await expect.poll(async () => (await (await fetch(base + '/api/state')).json() as { painting: unknown }).painting !== null).toBe(true);
   abort.abort(); await rejected; await module.stop();
   await module.start(host);
