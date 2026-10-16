@@ -2,7 +2,7 @@ import { fork, type ChildProcess } from 'node:child_process';
 import { logLines } from 'cortico/core/ipc-logger.ts';
 import { nowIso } from 'cortico/core/util.ts';
 import { fileURLToPath } from 'node:url';
-import type { World, WorldHost, WorldConsoleDecl, ToolDef } from 'cortico/core/types.ts';
+import type { World, WorldHost, WorldWebUiDecl, ToolDef } from 'cortico/core/types.ts';
 import { CANVAS_CONFIG_GROUP, type CanvasConfigSection } from './config.ts';
 import { CANVAS_TOOLS } from './tools.ts';
 import type { CanvasReply } from './server.ts';
@@ -20,7 +20,7 @@ export class CanvasWorld implements World {
   constructor(private readonly options: { cfg: CanvasConfigSection; directory: string; timezone?: string }) {}
   envPromptVars() { return {}; }
 
-  console(): WorldConsoleDecl {
+  webUi(): WorldWebUiDecl {
     return {
       lamps: [{ label: '画布', state: this.child?.connected ? 'online' : 'offline' }],
       links: this.url ? [{ label: '打开画室', href: this.url }, { label: '直播 Overlay', href: `${this.url}/overlay` }] : [],
