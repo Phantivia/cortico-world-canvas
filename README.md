@@ -1,162 +1,150 @@
-# cortico-world-canvas
+# 头像画室 · Canvas Studio
 
-Owner: `src/definition.ts`
+[中文](#中文) · [English](#english)
 
-[Cortico](https://github.com/Pal-AI-Lab/Cortico) 的画室 World，以独立 npm 包发布：独立网页、参考图队列、
-绘画工具和带图片的工具回执，另有一个你画我猜模式。
+让 Coo 在本机画室网页上用 p5.brush 笔触画画，还能主持「你画我猜」。
+Lets Coo paint with p5.brush strokes on a local studio page and host a draw-and-guess game.
 
-## 与 Cortico 的关系
+## 中文
 
-这是一个扩展包，不是 Cortico 的一部分。它按 Cortico 的扩展契约声明自己：
+Coo 用工具在画布上一批一批地画，画的过程在网页上实时播放，画完的截图随工具回执回给 Coo,Coo 看着改。
+人可以在网页上传参考图让 Coo 临摹。另有一个「你画我猜」模式:Coo 出题作画，观众在聊天或弹幕里猜,Coo 判分。
+网页带一个给 OBS 用的直播画面。
 
-```jsonc
-"cortico": { "kind": "world", "api": 6 }
+画室和你画我猜来自可缇(CortiV)的直播，是在 CortiV 直播里验证过的参考实现，别的 Persona 或非直播场景的兼容性没测过。
+网页上的标题「Corti 的头像画室」和画笔光标旁的名字「可缇」是直播画面用的，目前不能改。
+
+### 功能
+
+- 新建画布(默认 1024×1024,最大 2048×2048),用命名的路径部件作画：实色或水彩铺色、带起笔收笔压力的线稿、铅笔、马克笔、炭笔、喷点和排线
+- 按步骤改颜色或形状，整体移动、缩放、旋转部件，撤销某一步;新建画布时旧画布自动存档
+- 查看当前截图和全部步骤，可放大局部、加坐标网格;另存 PNG 并给出下载地址
+- 查看人上传的参考图，可放大局部;有人上传或改名参考图时 Coo 会收到通知
+- 你画我猜：网页切到游戏界面，登记题目和倒计时(网页只显示字数和公开提示),到点通知 Coo,揭示答案，计分板跨局保留
+- 人在网页上也能手绘、新建、保存、撤销;`/overlay` 直播画面显示画布、参考图和步骤，不显示按钮
+
+### 安装前准备
+
+1. **Chrome 浏览器**。Coo 画新笔画时，画笔引擎在后台起一个无窗口的 Chrome 渲染 p5.brush,不需要外网，也不用打开网页。本扩展不下载浏览器。
+   - 装 [Google Chrome](https://www.google.com/chrome/),装在默认位置即可，配置留空就会自动找到。
+   - 不用 Chrome 的，在配置「画笔浏览器（Chrome）」里填一个 Chromium 系浏览器的可执行文件路径。
+   - 确认方法：启用后让 Coo 画一笔。找不到浏览器时，第一次绘制的工具回执会报错;网页和参考图不受影响。
+2. **能看图的模型**(建议)。截图和参考图随工具回执发给模型，供应商声明了多模态时请求才带图。非多模态模型只收到文字占位,Coo 看不到自己画了什么。
+
+### 安装
+
+在 Cortico 或 Coopanion 的扩展页搜 `cortico-world-canvas` 安装，重启后在 World 总览里启用「头像画室」。
+
+依赖里的 `canvas` 是原生模块，安装时要运行它的构建脚本(从 GitHub 下载预编译文件)。扩展页安装会自动放行;命令行安装要带上 `--allow-build`:
+
+```bash
+cd extensions && corepack pnpm add --allow-build=canvas cortico-world-canvas
 ```
 
-运行时它以 `cortico/<框架 src 下的路径>` import 框架（`cortico/world.ts`、`cortico/core/types.ts` …），
-由框架 `src/extensions/runtime.ts` 注册的模块钩子解析到框架源码本身，扩展与框架共用同一份实例。
-因此包必须是 `"type": "module"`。本 World 没有 WebUI 面板，不需要构建产物。
+下载不到预编译文件，或所在平台没有预编译文件时,`canvas` 会在本机编译，需要 C++ 编译工具链和 Cairo。
 
-## 安装
+### 使用
+
+- World 默认关闭。启用并重启后，网页只监听 `127.0.0.1`,默认端口 7795,被占用时顺延。World 页签上有「打开画室」和「直播 Overlay」两个链接，实际地址以链接为准。
+- 在画室网页点「添加参考图」,或拖入、Ctrl+V 粘贴(PNG/JPEG,每张最多 10 MiB、最长边 4096 px,队列最多 64 张),命名后点「上传 N 张参考图」。Coo 会收到通知，可以用工具查看。
+- 对 Coo 说想画什么,Coo 自己新建画布、分批画、看截图修改。网页和直播画面同步播放笔迹。
+- 你画我猜：让 Coo 进入游戏(`canvas_game_enter`),Coo 出题、开局、作画。观众的猜测要靠别的 World 送进来，比如直播间弹幕。倒计时到点 Coo 会收到通知，先记分再揭示答案。
+- 绘画规则和主持流程在 World 页签的「画布 · 环境提示词」「画布 · 你画我猜主持说明」里，可以直接改。默认计分：第一个答对 +5,第二、三个 +3,其余在时限内答对的 +1。
+- OBS 里加一个浏览器源，地址填「直播 Overlay」链接。
+
+### 配置
+
+| 键 | 默认 | 说明 |
+|---|---|---|
+| `worlds.canvas.enabled` | `false` | 是否启用 |
+| `worlds.canvas.port` | `7795` | 画室网页端口，被占用时顺延，重启后生效 |
+| `worlds.canvas.browserFile` | 空 | 画笔用的浏览器可执行文件，留空用本机安装的 Google Chrome,重启后生效 |
+
+画作、参考图、存档和计分板存在数据目录的 `canvas/` 下。
+
+### 限制与常见问题
+
+- 一次工具调用超过 60 秒或被取消，画布服务会停下(防止没执行完的动作之后才写进画布),要重启这个 World 才能再用。
+- 每张画布最多 5000 步;每批最多 64 个动作，路径长度和重复实例数也有上限，超出时工具回执会说明。
+- 网页只在本机能打开，没有登录。
+- 实现细节(渲染、工具参数、编辑语义、存储格式)见 [docs/internals.md](https://github.com/Phantivia/cortico-world-canvas/blob/main/docs/internals.md)。
+
+## English
+
+Coo paints on a canvas with tools, one batch of strokes at a time. The studio page plays the strokes as they land, and the finished screenshot comes back in the tool result so Coo can look and revise.
+People can upload reference images on the page for Coo to copy. In draw-and-guess mode Coo picks a word and draws it, viewers guess in chat, and Coo keeps score.
+The page includes an overlay view for OBS.
+
+The studio and the game come from the Corti (CortiV) live streams. They are a reference implementation tested on CortiV streams; other Personas and non-streaming setups have not been tested.
+The page title "Corti 的头像画室" and the name "可缇" next to the brush cursor belong to the stream look and cannot be changed for now.
+
+### Features
+
+- New canvases (1024×1024 by default, up to 2048×2048). Coo draws named path parts: solid or watercolor fills, line art with start, middle and end pressure, pencil, marker, charcoal, spray and hatching.
+- Change a step's colors or shape, move, scale or rotate parts as a group, and undo any step. Starting a new canvas archives the old one.
+- See the current screenshot and every step, zoom into a region or add a coordinate grid. Save a PNG with a download link.
+- View the reference images people uploaded, with zoom. Coo is notified when someone uploads or renames one.
+- Draw-and-guess: the page switches to a game layout, a round has a secret answer and a countdown (the page shows only its length and a public hint), Coo is notified when time runs out, the answer is revealed, and the scoreboard carries across rounds.
+- People can also draw by hand on the page, start a new canvas, save and undo. The `/overlay` view shows the canvas, references and steps without buttons.
+
+### Before you install
+
+1. **Chrome.** When Coo draws new strokes, the brush engine starts a windowless Chrome in the background to render p5.brush. It needs no internet access and no open page. This extension does not download a browser.
+   - Install [Google Chrome](https://www.google.com/chrome/) in its default location. With the setting left empty, it is found automatically.
+   - To use another browser, set "画笔浏览器（Chrome）" (brush browser) to the executable of a Chromium-based browser.
+   - To check: enable the World and ask Coo to draw a stroke. If no browser is found, the first drawing tool result reports an error. The page and reference images keep working.
+2. **A model that can see images** (recommended). Screenshots and references are sent in tool results, and images are attached only when the provider declares multimodal support. A text-only model gets a placeholder, and Coo cannot see the drawing.
+
+### Install
+
+Search for `cortico-world-canvas` on the Extensions page of Cortico or Coopanion and install it. After restarting, enable "头像画室" in the World overview.
+
+The `canvas` dependency is a native module whose build script downloads a prebuilt binary from GitHub. The Extensions page allows it automatically. From the command line, allow it with `--allow-build`:
+
+```bash
+cd extensions && corepack pnpm add --allow-build=canvas cortico-world-canvas
+```
+
+If the prebuilt binary cannot be downloaded or does not exist for your platform, `canvas` compiles from source, which needs a C++ toolchain and Cairo.
+
+### Usage
+
+- The World is off by default. Once enabled and restarted, the page listens on `127.0.0.1` only, port 7795 by default, moving to the next port if taken. The World tab shows "打开画室" (open studio) and "直播 Overlay" (stream overlay) links with the actual address.
+- On the studio page click "添加参考图" (add reference), or drag images in or paste them with Ctrl+V (PNG/JPEG, up to 10 MiB and 4096 px on the long side, 64 in the queue). Name them and click "上传 N 张参考图" (upload). Coo is notified and can look at them.
+- Tell Coo what to draw. Coo creates a canvas, draws in batches and revises from the screenshots. The page and the overlay play the strokes live.
+- Draw-and-guess: ask Coo to enter the game (`canvas_game_enter`). Coo picks a word, starts the round and draws. Guesses have to come in through another World, such as live-room chat. When the countdown ends Coo is notified, scores first, then reveals the answer.
+- The drawing rules and the host guide are in the World tab under "画布 · 环境提示词" (environment prompt) and "画布 · 你画我猜主持说明" (host guide), and can be edited there. Default scoring: +5 for the first correct guess, +3 for the second and third, +1 for anyone else in time.
+- In OBS, add a browser source pointing at the "直播 Overlay" link.
+
+### Configuration
+
+| Key | Default | Description |
+|---|---|---|
+| `worlds.canvas.enabled` | `false` | Turns the World on |
+| `worlds.canvas.port` | `7795` | Studio page port; moves to the next free port; applies after restart |
+| `worlds.canvas.browserFile` | empty | Browser executable for the brush engine; empty uses the installed Google Chrome; applies after restart |
+
+Drawings, references, archives and the scoreboard are stored under `canvas/` in the data directory.
+
+### Limits and FAQ
+
+- If one tool call runs longer than 60 seconds or is cancelled, the canvas service stops so unfinished actions cannot land later. Restart the World to use it again.
+- A canvas holds up to 5000 steps. A batch holds up to 64 actions, and path length and repeated instances have limits too; the tool result says when one is exceeded.
+- The page opens only on this machine and has no login.
+- Implementation details (rendering, tool parameters, edit semantics, storage format) are in [docs/internals.md](https://github.com/Phantivia/cortico-world-canvas/blob/main/docs/internals.md) (Chinese).
+
+## 开发 · Development
 
 ```bash
 corepack pnpm install
-```
-
-然后二选一装进 Cortico：WebUI「扩展」页手动安装，填本目录的绝对路径；或在 `<Cortico>/extensions/` 下
-`corepack pnpm add --ignore-workspace <本目录绝对路径>`。装完整进程重启 Cortico。
-
-在 WebUI 启用「头像画室」并重启，或在部署配置加入
-`"worlds": { "canvas": { "enabled": true, "port": 7795 } }`。 World 默认关闭，
-只监听 `127.0.0.1`；端口占用时顺延，实际地址以 WebUI 链接为准。
-
-## 浏览器
-
-绘制新路径需要一个 Chromium 系浏览器。画笔引擎起一个无窗口的独立浏览器进程，
-从本地依赖加载 p5.brush 2.2.2 standalone，通过 WebGL2 渲染；无需外网或打开画室页面。
-本 World 不下载浏览器：`worlds.canvas.browserFile` 留空用本机安装的 Google Chrome（puppeteer 的
-`chrome` channel 定位），填了就用那个可执行文件。找不到浏览器时第一次绘制的工具回执报错，网页与
-参考图功能不受影响。
-
-## 开发
-
-开发期 `cortico/*` 经 devDependency `cortico`(npm 上的框架包)解析。要对着本地未发版的框架改动开发,在本目录执行
-`pnpm link <框架 checkout>`;它会往 `pnpm-workspace.yaml` 写一条 `overrides`,提交前撤掉。
-
-```bash
 corepack pnpm typecheck
 corepack pnpm test
 ```
 
-测试不起浏览器：绘制走 `canvas` 包的软件渲染，图层与网页由本地 HTTP 服务器验证。
+包里直接发 TypeScript 源码，没有构建步骤。测试用 `canvas` 包的软件渲染，不起浏览器。对着本地框架改动开发见 [docs/internals.md](https://github.com/Phantivia/cortico-world-canvas/blob/main/docs/internals.md#开发)。
 
-## 渲染
+The package ships TypeScript sources and has no build step. Tests use the software renderer of the `canvas` package and start no browser.
 
-透明图层适配器固定对应 p5.brush 2.2.2：图层内使用颜料混色，图层之间使用 alpha 合成。
-旧图层缓存保持原像素；重新编辑的部件使用当前适配器渲染。
+## 许可 · License
 
-## 网页
-
-主页面 `/` 提供多图上传、上传前命名、重命名、参考图原图预览、主画布、手绘工具、
-新建、保存和步骤撤销。`/overlay` 供 OBS 浏览器源使用，显示画布、参考图和步骤，隐藏操作按钮。
-参考图支持 PNG/JPEG，每张最多 10 MiB、4096×4096 像素，队列最多 64 张。
-在主页面按 Ctrl+V 可粘贴剪贴板图片，支持连续粘贴及一次粘贴多张；图片进入待上传列表，命名后点击上传。
-
-## 工具
-
-| 工具 | 作用 |
-|---|---|
-| `canvas_new` | 新建标题、宽高与底色；默认 1024×1024，最大 2048×2048 |
-| `canvas_draw` | 顺序执行 1–64 个动作，完成后返回步骤 ID 和最终截图 |
-| `canvas_edit` | 按步骤 ID 完整替换或局部修改 1–64 个动作，保留叠加顺序，返回旧参数供还原 |
-| `canvas_transform` | 成组平移、缩放、旋转路径部件，保留笔宽和叠加顺序，返回旧参数 |
-| `canvas_snapshot` | 当前截图与全部有效步骤（含参数），支持局部放大和坐标网格 |
-| `canvas_undo` | 按 `step_id` 撤销单步并重放其余步骤 |
-| `canvas_save` | 另存 PNG，返回本地路径与下载地址 |
-| `canvas_references` | 列出全部参考图，按 ID 查看最多 8 张，可对单张局部放大 |
-| `canvas_game_enter` | 进入你画我猜：网页切到游戏界面，回执附 [GAME_GUIDE.md](GAME_GUIDE.md) 的主持流程与计分规则 |
-| `canvas_game_round` | 开局：登记题目（网页只显示字数和公开提示）并启动倒计时，默认 300 秒 |
-| `canvas_game_timer` | 从现在起重新计时，或 `stop` 作废本局 |
-| `canvas_game_reveal` | 结算：停止倒计时，弹出答案揭示动画，可附本局得分者名单 |
-| `canvas_game_scoreboard` | 查看模式、本局题目与剩余秒数、上一局揭示、完整排名 |
-| `canvas_game_score` | 单个或批量写计分板：`add` 加减、`set` 设定、`remove` 删除、`reset` 清空 |
-| `canvas_game_exit` | 回到自由画板，计分板保留 |
-
-模型通过命名路径部件绘画，路径使用大写绝对坐标 `M/L/Q/C/Z`，支持断开的子路径、
-尖角和连续曲线。每个部件可铺实色或水彩、描压力笔画、填排线，并可用 `clip_to`
-将阴影与纹理限制在更早的闭合部件内。多个闭合子路径分别填实，不解释为镂空。
-线稿、铅笔、马克笔、炭笔和喷点由 p5.brush 渲染；起笔、中段和收笔压力分别可调。
-`instances` 接受最多 64 个六数仿射矩阵，将同一路径重复为刻度或雨点等，所有实例共享一个步骤 ID。
-先应用局部实例矩阵，再应用动作的 `matrix`；省略时绘制一次，每批最多 256 个实例。
-坐标从左上角 `(0,0)` 开始，颜色使用 `#RRGGBB`，参数见 `tools.ts`。
-网页手绘保留普通笔、马克笔、软笔、橡皮擦、直线、矩形、椭圆、连通填充与喷漆；旧动作和旧存档继续使用原渲染器。
-
-```json
-{
-  "actions": [
-    {"label":"脸部底色","path":"M300 240 C430 170 650 190 710 280 C760 500 620 690 510 675 C380 670 280 460 300 240 Z","fill":{"color":"#ffe4d6"}},
-    {"label":"左眼上眼睑","path":"M365 425 Q405 397 450 417","stroke":{"brush":"liner","color":"#776688","width":4,"pressure":[0.6,1,0.5]}}
-  ]
-}
-```
-
-`canvas_edit` 的每个更新指定 `step_id`，以及 `action` 完整替换或 `patch` 局部修改，二选一。
-例如 `{"step_id":"…","patch":{"fill":{"color":"#80b8c0"},"stroke":null}}` 只改填色并移除描边。
-`fill/stroke/hatch` 按子字段合并；`null` 移除整项或子字段，删除可选子字段后重新应用默认值。
-`clip_to:null` 清除裁剪，`instances:null` 恢复单次绘制，`path/label/matrix/instances` 直接替换；未提供的字段保留。合并后的动作仍须通过完整校验。
-回执的 `previous` 是完整旧动作，可直接作为下一次的 `updates` 还原修改。
-步骤 ID、随机种子及位置保留；历史仍列出当前有效动作。
-`canvas_transform` 将选中部件围绕 `origin` 缩放、旋转，再平移；矩阵存入动作，笔宽不变。
-裁剪随目标部件的轮廓变化；整体变换时应同时选中阴影与其目标。删除或打开一个被 `clip_to`
-引用的轮廓前，必须先修改或撤销依赖步骤。整批修改按最终依赖关系校验。
-
-快照和参考图的 `region:{x,y,width,height}` 使用源图像素，不能超出图像；局部最长边限制
-为 1024，最多放大四倍。`grid:true` 附加原图坐标网格和 32 像素边距，不修改存档。
-回执 `view`（参考图为 `views`）中的映射为：输出坐标 = `(源坐标 - region 起点) × scale + offset`。
-无观察参数时保持原图大小。带裁剪参数的参考图请求必须选中一张图片。
-
-绘画策略与完整图例见 [ENV_PROMPT.md](ENV_PROMPT.md)，研究来源及质量评估范围见 [RESEARCH.md](RESEARCH.md)。
-
-## 你画我猜
-
-自由画板是默认界面。`canvas_game_enter` 把主页面和 `/overlay` 一起切到游戏界面：画板居中，
-右侧计分板显示前十名；开局时舞台上方弹出倒计时（进度环、字数空格、公开提示），揭示时弹出答案
-卡片与本局得分者。名次变化、进场、加分和弹窗都有过渡动画。游戏逻辑不在 World 内：谁答对、记几分
-由模型按 [GAME_GUIDE.md](GAME_GUIDE.md) 判断后写入计分板， World 只保存状态、隐藏题目和计时。
-主持说明在 WebUI「画布 · 你画我猜主持说明」可编辑，每次进入游戏时读取。
-
-倒计时到点由画布子进程发出内部事件 `canvas.game`（`trigger: flush`），正文带题目和下一步；
-之后的回答不计分，先记分再揭示。`data/canvas/game.json` 保存模式、局数、当前一局（含题目）、
-上一局揭示与计分板；重启后进行中的倒计时按原截止时间继续，到点照常投递。计分板跨局、跨重启
-保留，`canvas_game_score` 的 `reset` 清零；最多 500 人，名字 40 字以内。
-
-## 执行与存储契约
-
-渲染、原图解码、PNG 编码和网页服务在独立子进程中运行。HTTP 操作和模型工具共用
-串行队列；整批动作先校验，再播放绘制，最后原子替换步骤档案。播放帧是临时视图，
-截图工具和保存工具在队列中读取已提交的画布。模型仅提交路径和样式数据，不能执行浏览器脚本。
-调用被取消或超时会关闭画笔浏览器并停止子进程，防止未执行动作迟到写入；重新启用需重启 World。
-
-光标在抬笔移动时走缓入缓出的轻弧线，落笔时按路径长度推进；几何图形描边后填色。
-曲线绘制与光标采样共享路径。断开的子路径之间抬笔移动，预览沿笔迹揭示已渲染的像素，
-保留材质和部件裁剪。填色在轮廓完成后显示。批量修改按最终构图预览其他部件，
-逐个播放选中部件的笔迹，保持同批修改后的遮挡和裁剪关系。
-密集编辑预先合成未变化的上层以减少动画开销；含旧连通填充时逐帧重放。
-这些预览优化不改变提交结果，最终画布仍按完整步骤顺序重放。
-24×24 像素头像光标的图案、调色板和四种动作节奏来自
-[cortico-world-pvz 的 cursor-companion 目录](https://github.com/Phantivia/cortico-world-pvz/tree/main/cursor-companion)，
-以静态 SVG（`src/public/corti-cursor.svg`）随本 World 自带，不建立运行时依赖。光标属于展示层，不进入作品 PNG。
-
-`data/canvas/index.json` 保存当前画布 ID 与参考图队列；`boards/<id>.json` 保存画布和步骤；
-`references/` 保存解码归一化后的 PNG；`exports/` 保存每次另存的作品。新建不会覆盖旧档案，
-`layers/` 按内容哈希保存 p5.brush 透明 PNG 图层，步骤引用哈希；未提交批次可能留下未引用图层。
-重启、撤销、快照和保存直接重放缓存，无需重新启动画笔浏览器。随机种子随步骤保存，编辑重新渲染该部件。
-移出参考图队列保留其文件。每张画布最多 5000 步，每批最多 64 个动作和 64000 个路径字符；
-每个路径最多 16000 字符、展开后最多 8192 点。图层解码缓存限制为 128 MiB。
-
-图片通过 Core 的 `media.put` 进入现有工具回执链路。供应商的 `multimodal` 声明
-决定请求是否附带图片；非多模态模型保留文字占位符，无额外视觉模型调用。
-
-## 许可
-
-MIT，见 [LICENSE](LICENSE)。框架 Cortico 也是 MIT，两者经扩展契约相连，许可各归各。
+MIT

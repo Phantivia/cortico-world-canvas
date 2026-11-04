@@ -1,8 +1,8 @@
 {
   "name": "cortico-world-canvas",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "type": "module",
-  "description": "Cortico World: a drawing studio and a draw-and-guess game — p5.brush strokes rendered in a headless browser, served as a live board",
+  "description": "Cortico World: a drawing studio and a draw-and-guess game. Coo paints with p5.brush strokes rendered in a headless Chrome, shown live on a local page with an OBS overlay",
   "author": "Phantivia",
   "license": "MIT",
   "repository": {
@@ -27,10 +27,29 @@
   "cortico": {
     "kind": "world",
     "api": 6,
-    "describe": "describe.json"
+    "displayName": "头像画室",
+    "icon": "assets/icon.png",
+    "describe": "describe.json",
+    "tags": [
+      "streaming",
+      "game",
+      "creative",
+      "external-setup"
+    ],
+    "locales": {
+      "zh": {
+        "displayName": "头像画室",
+        "description": "让 Coo 在本机画室网页上用 p5.brush 笔触画画，还能主持「你画我猜」。画的过程在网页和直播画面上实时播放，截图随工具回执回给 Coo。\n\n**功能**\n- 用命名的路径部件作画：实色或水彩铺色、带压力的线稿、铅笔、马克笔、炭笔、排线\n- 按步骤修改、整体移动缩放旋转、撤销，另存 PNG\n- 人在网页上传参考图，Coo 查看并临摹，可放大局部\n- 你画我猜：题目只显示字数和提示，倒计时到点通知 Coo，计分板跨局保留\n- 给 OBS 用的直播画面(/overlay)\n\n**安装后还需要**\n1. 本机安装 Google Chrome，或在配置里填一个 Chromium 系浏览器的路径\n2. 建议用能看图的模型，否则 Coo 看不到画面\n3. 详细步骤见 [README](https://github.com/Phantivia/cortico-world-canvas#安装前准备)\n\nCortiV 直播验证过的参考实现。网页上的「Corti」「可缇」字样来自直播画面。"
+      },
+      "en": {
+        "displayName": "Canvas Studio",
+        "description": "Lets Coo paint with p5.brush strokes on a local studio page and host a draw-and-guess game. Strokes play live on the page and the stream overlay, and screenshots come back to Coo in tool results.\n\n**Features**\n- Draws named path parts: solid or watercolor fills, pressure-sensitive line art, pencil, marker, charcoal, hatching\n- Edit by step, move, scale or rotate parts, undo, save as PNG\n- People upload reference images on the page; Coo views and copies them, with zoom\n- Draw-and-guess: the page shows only the answer length and a hint, Coo is notified when time runs out, and the scoreboard carries across rounds\n- An overlay view (/overlay) for OBS\n\n**After installing you also need**\n1. Google Chrome installed, or a Chromium-based browser path in the settings\n2. A model that can see images (recommended), or Coo cannot see the drawing\n3. See the [README](https://github.com/Phantivia/cortico-world-canvas#before-you-install) for details\n\nReference implementation tested on CortiV streams. The \"Corti\" and \"可缇\" text on the page comes from the stream look."
+      }
+    }
   },
   "files": [
     "src",
+    "assets",
     "README.md",
     "LICENSE",
     "CHANGELOG.md",

@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#5a2244"/>
+      <stop offset="1" stop-color="#2a0e22"/>
+    </linearGradient>
+    <linearGradient id="handle" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#ffd166"/>
+      <stop offset="1" stop-color="#f4a340"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="512" height="512" rx="112" fill="url(#bg)"/>
+
+  <!-- a painted brush stroke behind the palette -->
+  <path d="M96 410 C170 360 250 400 330 360 C380 336 410 344 430 352" fill="none" stroke="#22e3ee" stroke-width="26" stroke-linecap="round" stroke-opacity="0.85"/>
+
+  <!-- palette with a thumb hole -->
+  <path fill="#ffffff" fill-rule="evenodd" d="M252 100
+    C350 96 424 152 424 228
+    C424 292 372 312 330 300
+    C298 291 280 306 290 336
+    C302 372 270 396 226 392
+    C146 384 88 320 88 244
+    C88 162 160 104 252 100 Z
+    M214 304 a26 22 0 1 0 0.1 0 Z"/>
+
+  <!-- paint dabs -->
+  <circle cx="176" cy="198" r="30" fill="#ff6b7d"/>
+  <circle cx="254" cy="160" r="30" fill="#ffd166"/>
+  <circle cx="340" cy="184" r="30" fill="#22e3ee"/>
+  <circle cx="356" cy="254" r="24" fill="#8a7dff"/>
+
+  <!-- brush laid across -->
+  <g transform="rotate(-38 330 360)">
+    <rect x="300" y="350" width="170" height="24" rx="12" fill="url(#handle)"/>
+    <rect x="268" y="346" width="40" height="32" rx="6" fill="#d9dce8"/>
+    <path d="M268 346 C236 348 214 356 196 362 C214 368 236 376 268 378 Z" fill="#111322"/>
+  </g>
+</svg>
